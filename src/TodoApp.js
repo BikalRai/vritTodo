@@ -1,77 +1,149 @@
 import React, { useState } from 'react';
+import TextField from '@mui/material/TextField';
+import Button from '@mui/material/Button';
 
 const TodoApp = () => {
     const [todos, setTodos] = useState([]);
-    const [inputValue, setInputValue] = useState({
-        firstName: '',
-        lastName: '',
-    });
+    const [firstEntry, setFirstEntry] = useState('');
+    const [secondEntry, setSecondEntry] = useState('');
 
     const [edit, setEdit] = useState(false);
-    const { firstName, lastName } = inputValue;
+    const [editIndex, setEditIndex] = useState(-1);
 
     // handle first input
-    const handleFirstInput = ({ prev, target: { value } }) => {
-        setInputValue({ ...inputValue, firstName: value });
-        console.log(inputValue);
+    const handleFirstInput = ({ target: { value } }) => {
+        setFirstEntry(value);
+        console.log(firstEntry);
     };
 
     // handle second input
-    const handSecondInput = ({ prev, target: { value } }) => {
-        setInputValue({ ...inputValue, lastName: value });
-        console.log(inputValue);
+    const handleSecondInput = ({ target: { value } }) => {
+        setSecondEntry(value);
+        console.log(secondEntry);
     };
 
     // handle to add
     const handleAddTodo = () => {
-        setTodos((prev) => [...prev, inputValue]);
-        console.log(todos);
-        setInputValue({ ...inputValue, firstName: '', lastName: '' });
+        if (edit) {
+            setTodos((prev) => {
+                prev[editIndex].first = firstEntry;
+                prev[editIndex].second = secondEntry;
+                return prev;
+            });
+            setEdit(false);
+            setEditIndex(-1);
+        } else {
+            setTodos((prev) => {
+                return [...prev, { first: firstEntry, second: secondEntry }];
+            });
+        }
+
+        setFirstEntry('');
+        setSecondEntry('');
     };
 
     //handle edit
-    const handleEditOne = (index) => {
-        // setInputValue(todos[index].firstName);
-        console.log(todos[0].firstname);
+    const handleEdit = (index) => {
+        setFirstEntry(todos[index].first);
+        setSecondEntry(todos[index].second);
         setEdit(true);
+        setEditIndex(index);
+    };
+
+    // handling delete
+    const handleDelete = (index) => {
+        setTodos((prev) => {
+            const newArr = [...prev];
+            newArr.splice(index, 1);
+            return newArr;
+        });
     };
 
     return (
         <>
             <form>
-                <input
+                {/* <input
                     type="text"
-                    value={firstName}
+                    value={firstEntry}
+                    onChange={handleFirstInput}
+                /> */}
+                {/* <TextField
+                    id="standard-basic"
+                    className="first-entry"
+                    label="First Entry"
+                    variant="standard"
+                    value={firstEntry}
+                    onChange={handleFirstInput}
+                /> */}
+                <TextField
+                    id="standard-entry-input"
+                    label="First entry"
+                    type="text"
+                    variant="filled"
+                    value={firstEntry}
                     onChange={handleFirstInput}
                 />
-                <input
+                {/* <input
                     type="text"
-                    value={lastName}
-                    onChange={handSecondInput}
+                    value={secondEntry}
+                    onChange={handleSecondInput}
+                /> */}
+                {/* <TextField
+                    id="standard-basic"
+                    className="second-entry"
+                    label="Second Entry"
+                    variant="standard"
+                    value={secondEntry}
+                    onChange={handleSecondInput}
+                /> */}
+                <TextField
+                    id="standard-entry-input"
+                    label="Second entry"
+                    type="text"
+                    variant="filled"
+                    value={secondEntry}
+                    onChange={handleSecondInput}
                 />
-                <button type="button" onClick={handleAddTodo}>
+                {/* <button type="button" onClick={handleAddTodo}>
                     {edit ? 'Update' : '+'}
-                </button>
+                </button> */}
+                <Button
+                    variant="contained"
+                    color="success"
+                    onClick={handleAddTodo}
+                    type="submit"
+                >
+                    {edit ? 'Update' : '+'}
+                </Button>
+
                 <hr />
                 <ul>
                     {todos.map((todo, index) => (
-                        <ul key={index}>
-                            <li>
-                                {todo.firstName}
-                                <button
-                                    type="button"
-                                    onClick={() => handleEditOne(index)}
-                                >
-                                    Edit
-                                </button>
-                                <button type="button">Delete</button>
-                            </li>
-                            <li>
-                                {todo.lastName}
-                                <button type="button">Edit</button>
-                                <button type="button">Delete</button>
-                            </li>
-                        </ul>
+                        <li key={index}>
+                            {index + 1} <span>{todo.first}</span>
+                            <span>{todo.second}</span>
+                            {/* <button
+                                type="button"
+                                onClick={() => handleEdit(index)}
+                            >
+                                Edit
+                            </button> */}
+                            <Button
+                                variant="outlined"
+                                href="#outlined-buttons"
+                                onClick={() => handleEdit(index)}
+                            >
+                                Edit
+                            </Button>
+                            {/* <button type="button">Delete</button> */}
+                            <Button
+                                variant="outlined"
+                                href="#outlined-buttons"
+                                onClick={() => handleDelete(index)}
+                            >
+                                Delete
+                            </Button>
+                        </li>
                     ))}
                 </ul>
             </form>
